@@ -77,6 +77,7 @@
 #include <uORB/topics/follow_target.h>
 #include <uORB/topics/transponder_report.h>
 #include <uORB/topics/gps_inject_data.h>
+#include <uORB/topics/landing_target.h>
 
 #include "mavlink_ftp.h"
 
@@ -143,6 +144,7 @@ private:
 	void handle_message_adsb_vehicle(mavlink_message_t *msg);
 	void handle_message_gps_rtcm_data(mavlink_message_t *msg);
 	void handle_message_battery_status(mavlink_message_t *msg);
+	void handle_message_landing_target(mavlink_message_t *msg);
 
 	void *receive_thread(void *arg);
 
@@ -196,6 +198,7 @@ private:
 	orb_advert_t _baro_pub;
 	orb_advert_t _airspeed_pub;
 	orb_advert_t _battery_pub;
+	orb_advert_t _landing_target_pub;
 	orb_advert_t _cmd_pub;
 	orb_advert_t _flow_pub;
 	orb_advert_t _hil_distance_sensor_pub;

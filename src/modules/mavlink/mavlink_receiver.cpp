@@ -104,6 +104,7 @@ MavlinkReceiver::MavlinkReceiver(Mavlink *parent) :
 	_baro_pub(nullptr),
 	_airspeed_pub(nullptr),
 	_battery_pub(nullptr),
+	_landing_target_pub(nullptr),
 	_cmd_pub(nullptr),
 	_flow_pub(nullptr),
 	_hil_distance_sensor_pub(nullptr),
@@ -261,6 +262,10 @@ MavlinkReceiver::handle_message(mavlink_message_t *msg)
 
 	case MAVLINK_MSG_ID_BATTERY_STATUS:
 		handle_message_battery_status(msg);
+		break;
+
+	case MAVLINK_MSG_ID_LANDING_TARGET:
+		handle_message_landing_target(msg);
 		break;
 
 	default:
@@ -1188,6 +1193,32 @@ MavlinkReceiver::handle_message_battery_status(mavlink_message_t *msg)
 
 	} else {
 		orb_publish(ORB_ID(battery_status), _battery_pub, &battery_status);
+	}
+}
+
+void
+MavlinkReceiver::handle_message_landing_target(mavlink_message_t *msg)
+{
+	// Landing target msg handle
+	// PX4_WARN("Entering handle for landing target");
+	mavlink_landing_target_t landing_taget_mavlink;
+	mavlink_msg_landing_target_decode(msg, &landing_taget_mavlink);
+	landing_target_s landing_target = {};
+	// convert mavlink msg to uORB msg
+	landing_target.timestamp = landing_taget_mavlink.time_usec; // hrt_absolute_time();
+	landing_target.target_num = landing_taget_mavlink.target_num;
+	landing_target.frame = landing_taget_mavlink.frame;
+	landing_target.angle_x = landing_taget_mavlink.angle_x;
+	landing_target.angle_y = landing_taget_mavlink.angle_y;
+	landing_target.distance = landing_taget_mavlink.distance;
+	landing_target.size_x = landing_taget_mavlink.size_x;
+	landing_target.size_y = landing_taget_mavlink.size_y;
+	// PX4_INFO("landing target_num: %d", landing_target.target_num);
+	// publish msg
+	if (_landing_target_pub == nullptr) {
+		_landing_target_pub = orb_advertise(ORB_ID(landing_target), &landing_target);
+	}else{
+		orb_publish(ORB_ID(landing_target), _landing_target_pub,  &landing_target);
 	}
 }
 
