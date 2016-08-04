@@ -114,6 +114,7 @@ Navigator::Navigator() :
 	_offboard_mission_sub(-1),
 	_param_update_sub(-1),
 	_vehicle_command_sub(-1),
+	_landing_target_sub(-1),
 	_pos_sp_triplet_pub(nullptr),
 	_mission_result_pub(nullptr),
 	_geofence_result_pub(nullptr),
@@ -308,6 +309,7 @@ Navigator::task_main()
 	_offboard_mission_sub = orb_subscribe(ORB_ID(offboard_mission));
 	_param_update_sub = orb_subscribe(ORB_ID(parameter_update));
 	_vehicle_command_sub = orb_subscribe(ORB_ID(vehicle_command));
+	_landing_target_sub = orb_subscribe(ORB_ID(landing_target));
 
 	/* copy all topics first time */
 	vehicle_status_update();

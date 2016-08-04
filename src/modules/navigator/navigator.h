@@ -150,6 +150,7 @@ public:
 
 	int		get_onboard_mission_sub() { return _onboard_mission_sub; }
 	int		get_offboard_mission_sub() { return _offboard_mission_sub; }
+	int		get_landing_target_sub() { return _landing_target_sub; }
 	Geofence&	get_geofence() { return _geofence; }
 	bool		get_can_loiter_at_sp() { return _can_loiter_at_sp; }
 	float		get_loiter_radius() { return _param_loiter_radius.get(); }
@@ -226,6 +227,7 @@ private:
 	int		_offboard_mission_sub;		/**< offboard mission subscription */
 	int		_param_update_sub;		/**< param update subscription */
 	int		_vehicle_command_sub;		/**< vehicle commands (onboard and offboard) */
+	int		_landing_target_sub; /** < landing targets */
 
 	orb_advert_t	_pos_sp_triplet_pub;		/**< publish position setpoint triplet */
 	orb_advert_t	_mission_result_pub;
@@ -287,7 +289,7 @@ private:
 	control::BlockParamFloat _param_acceptance_radius;	/**< acceptance for takeoff */
 	control::BlockParamInt _param_datalinkloss_act;	/**< select data link loss action */
 	control::BlockParamInt _param_rcloss_act;	/**< select data link loss action */
-	
+
 	control::BlockParamFloat _param_cruising_speed_hover;
 	control::BlockParamFloat _param_cruising_speed_plane;
 	control::BlockParamFloat _param_cruising_throttle_plane;
