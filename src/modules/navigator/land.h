@@ -43,9 +43,19 @@
 
 #include <controllib/blocks.hpp>
 #include <controllib/block/BlockParam.hpp>
+#include <uORB/topics/landing_target.h>
 
 #include "navigator_mode.h"
 #include "mission_block.h"
+
+enum smart_landing_states{
+  ACQUIRE_LAND_SPOT,
+  LANDING_SPOT_CHECK,
+  START_DECENT,
+  LANDING_SPOT_DECENT_CHECK,
+  FINAL_TOUCH_DOWN,
+  LANDING_COMPLETED
+};
 
 class Land : public MissionBlock
 {
@@ -60,6 +70,23 @@ public:
 
     virtual void on_active();
 
+private:
+    int _smart_landing_en;
+    bool _current_pose_setted;
+    control::BlockParamInt  _param_smart_land_en;
+    landing_target_s _landing_target;
+    landing_target_s _current_landing_target;
+    landing_target_s _setted_landing_target;
+    smart_landing_states _landing_state;
+    struct vehicle_global_position_s* _current_global_position;
+
+    void update_landing_target();
+    void add_landing_target_delta(float &x_curr, float &y_curr, float theta,float phi, float distance);
+    inline void get_current_landing_target();
+    void set_land_waypoint();
+    void smart_landing_state_machine();
+    void final_touch_down();
+    void landing_completed();
 };
 
 #endif
