@@ -82,9 +82,10 @@ private:
 
     void update_landing_target();
     void add_landing_target_delta(float &x_curr, float &y_curr, float theta,float phi, float distance);
-    inline void get_current_landing_target();
-    void set_land_waypoint();
+    void get_current_landing_target();
     void smart_landing_state_machine();
+    void set_land_waypoint();
+    void set_decent_waypoint();
     void final_touch_down();
     void landing_completed();
 };

@@ -90,10 +90,6 @@ Land::on_activation()
     if (_smart_landing_en) {
       /* handle smart landing */
       // TODO: intialisation
-      // send request for landing spot
-      // set_current_position_item(&_mission_item);
-    	// struct position_setpoint_triplet_s *pos_sp_triplet = _navigator->get_position_setpoint_triplet();
-    	// mission_item_to_position_setpoint(&_mission_item, &pos_sp_triplet->current);
 	    _current_pose_setted = false;
       _landing_state = ACQUIRE_LAND_SPOT;
       PX4_WARN("Smart Landing enabled");
@@ -170,7 +166,7 @@ void Land::smart_landing_state_machine() {
       _current_pose_setted = false;
       if (_setted_landing_target.angle_x < 0.09f) {
         PX4_INFO("Okay.");
-        _landing_state = FINAL_TOUCH_DOWN;
+        _landing_state = START_DECENT;
         PX4_INFO("Starting descent...");
       }else{
         PX4_INFO("Landing spot is not the best anymore.");
@@ -181,6 +177,8 @@ void Land::smart_landing_state_machine() {
 
     case START_DECENT:
       // reduce altitude to nearly 7 m
+      set_decent_waypoint();
+      _landing_state = FINAL_TOUCH_DOWN;
       break;
 
     case LANDING_SPOT_DECENT_CHECK:
@@ -226,6 +224,8 @@ void Land::set_land_waypoint(){
   // set mission item
   landing_waypoint.lat = lat;
   landing_waypoint.lon = lon;
+  // make sure altitude is not relative
+  landing_waypoint.altitude_is_relative = false;
   landing_waypoint.altitude = _current_global_position->alt;
   landing_waypoint.loiter_radius = _navigator->get_loiter_radius();
 	landing_waypoint.loiter_direction = 1;
@@ -233,9 +233,39 @@ void Land::set_land_waypoint(){
 	landing_waypoint.acceptance_radius = 1;
 	landing_waypoint.time_inside = 0.0f;
 	landing_waypoint.pitch_min = 0.0f;
-	landing_waypoint.autocontinue = false; // ?????? TODO: review
+	landing_waypoint.autocontinue = false;
   landing_waypoint.origin = ORIGIN_ONBOARD;
+  // XXX needed! otherwise mission reached not accomplished
   _mission_item = landing_waypoint;
+  pos_sp_triplet->previous.valid = false;
+  /* convert mission item to current position setpoint and make it valid */
+  mission_item_to_position_setpoint(&_mission_item, &pos_sp_triplet->current);
+  pos_sp_triplet->next.valid = false;
+
+  _navigator->set_position_setpoint_triplet_updated();
+}
+
+void Land::set_decent_waypoint() {
+  // get position_setpoint_triplet pointer
+  struct position_setpoint_triplet_s *pos_sp_triplet = _navigator->get_position_setpoint_triplet();
+
+  mission_item_s descent_waypoint;
+  // set mission item
+  descent_waypoint.lat = _navigator->get_global_position()->lat;
+  descent_waypoint.lon = _navigator->get_global_position()->lon;
+  // make sure altitude is not relative
+  descent_waypoint.altitude_is_relative = true;
+  descent_waypoint.altitude = 7;
+  descent_waypoint.loiter_radius = _navigator->get_loiter_radius();
+  descent_waypoint.loiter_direction = 1;
+  descent_waypoint.nav_cmd = NAV_CMD_WAYPOINT;
+  descent_waypoint.acceptance_radius = 1;
+  descent_waypoint.time_inside = 0.0f;
+  descent_waypoint.pitch_min = 0.0f;
+  descent_waypoint.autocontinue = false;
+  descent_waypoint.origin = ORIGIN_ONBOARD;
+  // XXX needed! otherwise mission reached not accomplished
+  _mission_item = descent_waypoint;
   pos_sp_triplet->previous.valid = false;
   /* convert mission item to current position setpoint and make it valid */
   mission_item_to_position_setpoint(&_mission_item, &pos_sp_triplet->current);
