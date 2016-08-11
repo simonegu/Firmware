@@ -49,54 +49,55 @@
 #include "mission_block.h"
 
 enum smart_landing_states {
-  ACQUIRE_LAND_SPOT,
-  ACQUIRE_LAND_SPOT_REACHED,
-  LANDING_SPOT_CHECK,
-  START_DESCENT,
-  START_DESCENT_REACHED,
-  LANDING_SPOT_DESCENT_CHECK,
-  ABORT_MANOUVER,
-  ABORT_MANOUVER_REACHED,
-  FINAL_TOUCH_DOWN,
-  FINAL_TOUCH_DOWN_REACHED,
-  LANDING_COMPLETED
+	ACQUIRE_LAND_SPOT,
+	ACQUIRE_LAND_SPOT_REACHED,
+	LANDING_SPOT_CHECK,
+	START_DESCENT,
+	START_DESCENT_REACHED,
+	LANDING_SPOT_DESCENT_CHECK,
+	ABORT_MANOUVER,
+	ABORT_MANOUVER_REACHED,
+	FINAL_TOUCH_DOWN,
+	FINAL_TOUCH_DOWN_REACHED,
+	LANDING_COMPLETED
 };
 
-class Land : public MissionBlock {
+class Land : public MissionBlock
+{
 public:
-  Land(Navigator *navigator, const char *name);
+	Land(Navigator *navigator, const char *name);
 
-  ~Land();
+	~Land();
 
-  virtual void on_inactive();
+	virtual void on_inactive();
 
-  virtual void on_activation();
+	virtual void on_activation();
 
-  virtual void on_active();
+	virtual void on_active();
 
 private:
-  int _smart_landing_en;
-  bool _current_pose_setted;
-  bool _current_global_position_setted;
-  control::BlockParamInt _param_smart_land_en;
-  landing_target_s _landing_target;
-  landing_target_s _current_landing_targets[10];
-  landing_target_s *_current_landing_targets_ptr;
-  landing_target_s _setted_landing_target;
-  smart_landing_states _landing_state;
-  struct vehicle_global_position_s *_current_global_position;
+	int _smart_landing_en;
+	bool _current_pose_setted;
+	bool _current_global_position_setted;
+	control::BlockParamInt _param_smart_land_en;
+	landing_target_s _landing_target;
+	landing_target_s _current_landing_targets[10];
+	landing_target_s *_current_landing_targets_ptr;
+	landing_target_s _setted_landing_target;
+	smart_landing_states _landing_state;
+	struct vehicle_global_position_s *_current_global_position;
 
-  void update_landing_target();
-  void add_landing_target_delta(float &x_curr, float &y_curr, float theta,
-                                float phi, float distance);
-  void get_best_landing_target();
-  void get_current_landing_target();
-  void smart_landing_state_machine();
-  void set_land_waypoint();
-  void set_descent_waypoint();
-  void set_abort_waypoint();
-  void final_touch_down();
-  void landing_completed();
+	void update_landing_target();
+	void add_landing_target_delta(float &x_curr, float &y_curr, float theta,
+				      float phi, float distance);
+	void get_best_landing_target();
+	void get_current_landing_target();
+	void smart_landing_state_machine();
+	void set_land_waypoint();
+	void set_descent_waypoint();
+	void set_abort_waypoint();
+	void final_touch_down();
+	void landing_completed();
 };
 
 #endif
