@@ -1205,7 +1205,7 @@ MavlinkReceiver::handle_message_landing_target(mavlink_message_t *msg)
 	mavlink_msg_landing_target_decode(msg, &landing_taget_mavlink);
 	landing_target_s landing_target = {};
 	// convert mavlink msg to uORB msg
-	landing_target.timestamp = landing_taget_mavlink.time_usec; // hrt_absolute_time();
+	landing_target.timestamp = landing_taget_mavlink.time_usec;  // hrt_absolute_time();
 	landing_target.target_num = landing_taget_mavlink.target_num;
 	landing_target.frame = landing_taget_mavlink.frame;
 	landing_target.angle_x = landing_taget_mavlink.angle_x;
@@ -1213,12 +1213,14 @@ MavlinkReceiver::handle_message_landing_target(mavlink_message_t *msg)
 	landing_target.distance = landing_taget_mavlink.distance;
 	landing_target.size_x = landing_taget_mavlink.size_x;
 	landing_target.size_y = landing_taget_mavlink.size_y;
+
 	// PX4_INFO("landing target_num: %d", landing_target.target_num);
 	// publish msg
 	if (_landing_target_pub == nullptr) {
-		_landing_target_pub = orb_advertise(ORB_ID(landing_target), &landing_target);
-	}else{
-		orb_publish(ORB_ID(landing_target), _landing_target_pub,  &landing_target);
+		_landing_target_pub = orb_advertise_queue(ORB_ID(landing_target), &landing_target, 10);
+
+	} else {
+		orb_publish(ORB_ID(landing_target), _landing_target_pub, &landing_target);
 	}
 }
 
