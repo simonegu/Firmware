@@ -71,6 +71,7 @@ set(config_module_list
 	systemcmds/reboot
 	systemcmds/topic_listener
 	systemcmds/top
+	systemcmds/tune_control
 	systemcmds/config
 	systemcmds/nshterm
 	systemcmds/mtd
@@ -154,6 +155,7 @@ set(config_module_list
 	lib/launchdetection
 	lib/led
 	lib/terrain_estimation
+	lib/tunes
 	lib/runway_takeoff
 	lib/tailsitter_recovery
 	lib/version
