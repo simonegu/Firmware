@@ -131,9 +131,10 @@ set(config_module_list
 	lib/conversion
 	lib/launchdetection
 	lib/led
-	lib/terrain_estimation
 	lib/runway_takeoff
 	lib/tailsitter_recovery
+	lib/terrain_estimation
+	lib/tunes
 	lib/version
 	lib/DriverFramework/framework
 	platforms/nuttx
